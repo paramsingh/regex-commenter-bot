@@ -1,4 +1,4 @@
-const regexes = ['.*pylint: disable*']
+const regexes = ['.*pylint: disable*'] // TODO: put this in a yaml config file
 
 const matches = (pattern, text) => {
   const regex = new RegExp(pattern);
@@ -22,6 +22,8 @@ module.exports = (app) => {
             },
         });
 
+        // TODO: check that we haven't already commented
+        // TODO: Might not be fetching ALL the files because of pagination
         files.data.forEach((file) => {
           const patch = file.patch;
           let position = 0;
@@ -36,7 +38,7 @@ module.exports = (app) => {
                     commit_id: commitId,
                     position,
                     path: file.filename,
-                    body: "this is a comment"
+                    body: "this is a comment" // TODO: get this comment from config
                   });
                 }
               })
