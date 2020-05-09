@@ -1,3 +1,4 @@
+// https://glitch.com/edit/#!/bittersweet-hexagonal-message?path=index.js%3A49%3A0
 const regexes = ['.*pylint: disable*'] // TODO: put this in a yaml config file
 
 const matches = (pattern, text) => {
