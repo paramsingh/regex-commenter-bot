@@ -7,9 +7,6 @@ const matchesPattern = (pattern, text) => {
 };
 
 const getBotComments = async (github, owner, repo, pullNumber) => {
-
-  console.error(github, owner, repo, pullNumber)
-
   // FIXME: pagination
   const allComments = await github.pulls.listComments({
     owner,
