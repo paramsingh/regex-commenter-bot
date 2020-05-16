@@ -1,8 +1,34 @@
+const BOT_NAME = 'bittersweet-hexagonal-message[bot]';
+
 // TODO: make it clear in the docs that the pattern is taken as a JS string
 const matchesPattern = (pattern, text) => {
   const regex = new RegExp(pattern);
   return !!text.match(regex)
 };
+
+const getBotComments = async (github, owner, repo, pullNumber) => {
+
+  console.error(github, owner, repo, pullNumber)
+
+  // FIXME: pagination
+  const allComments = await github.pulls.listComments({
+    owner,
+    repo,
+    number: pullNumber
+  })
+
+  return allComments.data.filter((comment) => {
+    return comment.user.login === BOT_NAME
+  })
+}
+
+const commentAlreadyExists = (comments, position, potentialCommentText) => {
+  return !!comments.find((comment) => {
+    console.error(comment);
+    return comment.position === position && comment.body === potentialCommentText;
+  })
+}
+
 
 module.exports = (app) => {
   app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], async context => {
@@ -22,6 +48,13 @@ module.exports = (app) => {
         },
     });
 
+    const botComments = await getBotComments(
+      context.github,
+      owner,
+      repo,
+      pullNumber
+    )
+
     // TODO: check that we haven't already commented
     // TODO: Might not be fetching ALL the files because of pagination
     files.data.forEach((file) => {
@@ -40,8 +73,11 @@ module.exports = (app) => {
           // get each pattern from the config and try to match.
           const matches = config.matches;
           matches.forEach((match) => {
-            console.error(addedLine);
-            if (matchesPattern(match.regex, addedLine)) {
+            // default to default comment if match doesn't have an associated comment
+            const commentText = match.comment ? match.comment : config.defaults.comment;
+
+            if (matchesPattern(match.regex, addedLine) && !commentAlreadyExists(botComments, position, commentText)) {
+              console.log("Commenting " + commentText + " on line " + position)
               context.github.pulls.createComment({
                 owner,
                 repo,
@@ -50,8 +86,7 @@ module.exports = (app) => {
                 position,
                 path: file.filename,
 
-                // default to default comment if match doesn't have an associated comment
-                body: match.comment ? match.comment : config.defaults.comment
+                body: commentText,
               });
             }
           })
