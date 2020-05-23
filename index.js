@@ -21,13 +21,13 @@ const getBotComments = async (github, owner, repo, pullNumber) => {
 
 const commentAlreadyExists = (comments, position, potentialCommentText) => {
   return !!comments.find((comment) => {
-    console.error(comment);
     return comment.position === position && comment.body === potentialCommentText;
   })
 }
 
 
 module.exports = (app) => {
+  app.log.info("App started!!");
   app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], async context => {
     const owner = context.payload.repository.owner.login;
     const repo = context.payload.repository.name;
@@ -74,7 +74,7 @@ module.exports = (app) => {
             const commentText = match.comment ? match.comment : config.defaults.comment;
 
             if (matchesPattern(match.regex, addedLine) && !commentAlreadyExists(botComments, position, commentText)) {
-              console.log("Commenting " + commentText + " on line " + position)
+              app.log("Commenting " + commentText + " on line " + position)
               context.github.pulls.createComment({
                 owner,
                 repo,

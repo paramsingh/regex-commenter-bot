@@ -6,4 +6,5 @@ npm-debug.log
 .env
 package-lock.json
 coverage
+private_key
 lib
