@@ -1,4 +1,4 @@
-const BOT_NAME = 'bittersweet-hexagonal-message[bot]';
+const BOT_NAME = 'regex-commenter[bot]';
 
 // TODO: make it clear in the docs that the pattern is taken as a JS string
 const matchesPattern = (pattern, text) => {
