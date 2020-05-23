@@ -1,4 +1,5 @@
 const BOT_NAME = 'regex-commenter[bot]';
+const CONFIG_FILE = 'regex-commenter-config.yaml';
 
 // TODO: make it clear in the docs that the pattern is taken as a JS string
 const matchesPattern = (pattern, text) => {
@@ -34,7 +35,7 @@ module.exports = (app) => {
     const pullNumber = context.payload.pull_request.number;
     const commitId = context.payload.pull_request.head.sha;
 
-    const config = await context.config('config.yaml');
+    const config = await context.config(CONFIG_FILE);
 
     const files = await context.github.pulls.listFiles({
         owner,
